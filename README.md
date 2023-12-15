@@ -1,27 +1,34 @@
-# UnblockVPN Client Repository - A Mullvad VPN fork.
+# Welcome to the UnblockVPN Client Repository
 
-Welcome to the UnblockVPN Client Repository, a fork of the esteemed Mullvad VPN client software. This repository hosts the client applications for the UnblockVPN service, which is directly linked to the popular open-source project Mullvad, based in Sweden. Take a bow Mullvad team you are total legends.
+Hello there! 👋 We're thrilled you've stopped by the official repository for UnblockVPN's client applications. UnblockVPN, an initiative linked to the widely respected Mullvad VPN, focuses on delivering top-notch security and privacy in our VPN services. We're proudly based on the principles of open-source software, and our track record includes several positive audits, ensuring a trustworthy and secure experience.
 
-Mullvad VPN is renowned for its strong emphasis on security, privacy, and adherence to open-source principles. It has undergone multiple positive audits, reinforcing its reliability and trustworthiness. By leveraging the Mullvad VPN clients, UnblockVPN aims to provide its users with a highly secure and private VPN service. 
+For more information about UnblockVPN and what we stand for, feel free to visit our [main website](https://unblockvpn.io).
 
-The UnblockVPN service utilizes these clients to ensure full code transparency, allowing customers of the UnblockVPN service to verify the integrity and security of the software they use. This initiative aligns with our commitment to open-source development and the privacy-centric philosophy of our service.
+## Our Commitment to Transparency and Trust
 
-## GPL-3 Licensing and Contributions
+We believe in full transparency with our customers. That's why we provide complete access to the source code of our VPN clients. By doing so, we empower you to verify the security and integrity of the software you use. You can learn more about our dedication to your privacy in our [Privacy Policy](https://www.unblockvpn.io/legal/privacy-policy) and understand the guidelines governing the use of our services in our [Terms of Service](https://www.unblockvpn.io/legal/terms-of-service).
 
-This project is licensed under the GNU General Public License version 3 (GPL-3), which has significant implications for how the software can be used and modified:
+## GPL-3 Licensing
 
-- **Freedom to Use and Modify**: GPL-3 grants the freedom to run, study, share, and modify the software.
-- **Redistribution**: You can redistribute the software under the same license terms (GPL-3).
-- **Source Code Availability**: When distributing the software or derivatives of it, the source code must also be made available under the same GPL-3 license.
-- **Community Contributions**: Contributions back to this fork are encouraged, enhancing the utility and security of the software for all users.
+The heart of our project is open-source. All modifications and enhancements to this repository are governed under the GNU General Public License version 3 (GPL-3). This means you are free to use, modify, and redistribute the software, provided you adhere to the GPL-3 terms. It's a win-win for everyone – encouraging innovation and collaboration in the community!
 
-Your participation and contributions are highly valued, and we encourage you to engage with this repository, whether it's through using the software, reporting issues, or contributing to the code.
+## We're Hiring!
 
-## Original Mullvad VPN Repository Information
+🌟 **Join Our Team!** 🌟
 
-For more details on the original Mullvad VPN project, including features, supported platforms, and build instructions, please refer to the following section of this README, or visit their [website](https://mullvad.net) and [GitHub repository](https://github.com/mullvad/mullvadvpn-app).
+We're on the lookout for talented iOS and Android developers who are passionate about building secure and user-friendly mobile applications. If you're excited about VPN technologies and want to contribute to a privacy-focused project, we'd love to hear from you!
+
+Check out our [careers page](https://unblockvpn.io/careers) for current openings and how to apply.
+
+## Get in Touch
+
+Questions? Suggestions? We're all ears! Reach out to us at [developer@unblockvpn.io](mailto:developer@unblockvpn.io). Our development team is always eager to discuss ideas, receive feedback, or provide assistance.
+
+Thank you for your interest in UnblockVPN. We're excited to have you on this journey with us!
 
 ---
+
+Below is the original README from the Mullvad VPN repository.
 
 # Mullvad VPN desktop and mobile app
 
