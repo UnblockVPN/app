@@ -18,7 +18,7 @@ The heart of our project is open-source. All modifications and enhancements to t
 
 We're on the lookout for talented iOS and Android developers who are passionate about building secure and user-friendly mobile applications. If you're excited about VPN technologies and want to contribute to a privacy-focused project, we'd love to hear from you!
 
-Check out our [careers page](https://unblockvpn.io/careers) for current openings and how to apply.
+Check out our [careers page](https://unblockvpn.io/careers) for current openings and how to apply and shoot an email to join@unblockvpn.io.
 
 ## Get in Touch
 
