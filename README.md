@@ -1,3 +1,28 @@
+# UnblockVPN Client Repository - A Mullvad VPN fork.
+
+Welcome to the UnblockVPN Client Repository, a fork of the esteemed Mullvad VPN client software. This repository hosts the client applications for the UnblockVPN service, which is directly linked to the popular open-source project Mullvad, based in Sweden. Take a bow Mullvad team you are total legends.
+
+Mullvad VPN is renowned for its strong emphasis on security, privacy, and adherence to open-source principles. It has undergone multiple positive audits, reinforcing its reliability and trustworthiness. By leveraging the Mullvad VPN clients, UnblockVPN aims to provide its users with a highly secure and private VPN service. 
+
+The UnblockVPN service utilizes these clients to ensure full code transparency, allowing customers of the UnblockVPN service to verify the integrity and security of the software they use. This initiative aligns with our commitment to open-source development and the privacy-centric philosophy of our service.
+
+## GPL-3 Licensing and Contributions
+
+This project is licensed under the GNU General Public License version 3 (GPL-3), which has significant implications for how the software can be used and modified:
+
+- **Freedom to Use and Modify**: GPL-3 grants the freedom to run, study, share, and modify the software.
+- **Redistribution**: You can redistribute the software under the same license terms (GPL-3).
+- **Source Code Availability**: When distributing the software or derivatives of it, the source code must also be made available under the same GPL-3 license.
+- **Community Contributions**: Contributions back to this fork are encouraged, enhancing the utility and security of the software for all users.
+
+Your participation and contributions are highly valued, and we encourage you to engage with this repository, whether it's through using the software, reporting issues, or contributing to the code.
+
+## Original Mullvad VPN Repository Information
+
+For more details on the original Mullvad VPN project, including features, supported platforms, and build instructions, please refer to the following section of this README, or visit their [website](https://mullvad.net) and [GitHub repository](https://github.com/mullvad/mullvadvpn-app).
+
+---
+
 # Mullvad VPN desktop and mobile app
 
 Welcome to the Mullvad VPN client app source code repository.
