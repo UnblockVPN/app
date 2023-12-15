@@ -1,0 +1,18 @@
+#include "Version.xcconfig"
+
+// Development team
+DEVELOPMENT_TEAM = ZRQ9JYR5S2
+
+// Bundle ID
+APPLICATION_IDENTIFIER = io.unblockvpn.app
+
+// Shared container security group ID
+SECURITY_GROUP_IDENTIFIER = group.io.unblockvpn.app
+
+// Code signing style
+// Possible values: Manual or Automatic
+CODE_SIGN_STYLE = Automatic
+
+// Code signing identity
+// CODE_SIGN_IDENTITY[config=Debug] = Apple Development
+// CODE_SIGN_IDENTITY[config=Release] = Apple Distribution
