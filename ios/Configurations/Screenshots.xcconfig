@@ -1,0 +1,8 @@
+#include "Base.xcconfig"
+
+// Provisioning profiles
+// Comment out the lines below if using automatic code sign
+//PROVISIONING_PROFILE_SPECIFIER[config=Debug][sdk=*][arch=*] = Screenshots Development
+
+// UnblockVPN account number used when taking screenshots
+//UNBLOCKVPN_ACCOUNT_TOKEN = 
