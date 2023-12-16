@@ -4,8 +4,8 @@ use std::{
 };
 
 fn main() {
-    let socketaddr = SocketAddr::from_str("185.65.135.117:443").unwrap();
-    let password = "mullvad";
+    let socketaddr = SocketAddr::from_str("35.226.235.56:443").unwrap();
+    let password = "unblockvpn.io";
     let cipher = "aes-256-gcm";
 
     let cipher_ptr = cipher.as_ptr();
@@ -14,11 +14,11 @@ fn main() {
     let password_ptr = password.as_ptr();
     let password_size = password.as_bytes().len();
 
-    let forward_address = Ipv4Addr::from_str("45.83.223.196").unwrap();
+    let forward_address = Ipv4Addr::from_str("34.42.109.58").unwrap();
     let forward_address_bytes = forward_address.octets();
     let forward_address_ptr = forward_address_bytes.as_ptr();
 
-    let addr = Ipv4Addr::from_str("185.65.135.117").unwrap();
+    let addr = Ipv4Addr::from_str("35.226.235.56").unwrap();
     let addr_bytes = addr.octets();
     let addr_ptr = addr_bytes.as_ptr();
 
