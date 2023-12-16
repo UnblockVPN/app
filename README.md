@@ -1,6 +1,6 @@
 # Welcome to the UnblockVPN Client Repository 🚀
 
-Hello there! 👋 We're thrilled you've stopped by the official repository for UnblockVPN's client applications. UnblockVPN, an initiative linked to the widely respected Mullvad VPN, focuses on delivering top-notch security and privacy in our VPN services. We're proudly based on the principles of open-source software, and our track record includes several positive audits, ensuring a trustworthy and secure experience.
+Hello there! 👋 We're thrilled you've stopped by the official repository for UnblockVPN's client applications. UnblockVPN, an initiative linked to the widely respected Mullvad VPN, focuses on delivering top-notch security and privacy in our VPN services. We're proudly based on the principles of open-source software, and our service leverages the best wireguard based VPN projects on gh, providing a trustworthy and secure experience.
 
 For more information about UnblockVPN and what we stand for, feel free to visit our [main website](https://unblockvpn.io).
 
