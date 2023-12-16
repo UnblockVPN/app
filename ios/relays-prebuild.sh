@@ -18,5 +18,5 @@ fi
 
 if [ ! -f "$RELAYS_FILE" ]; then
   echo "Download relays file"
-  curl https://api.mullvad.net/app/v1/relays -s -o "$RELAYS_FILE"
+  curl https://api.unblockvpn.io/app/v1/relays -s -o "$RELAYS_FILE"
 fi
