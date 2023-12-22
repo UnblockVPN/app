@@ -22,21 +22,38 @@ Line wrap the file at 100 chars.                                              Th
 * **Security**: in case of vulnerabilities.
 
 ## [Unreleased]
+### Fixed
+#### Linux
+- Out IP missing forever when am.i.mullvad.net returns error
+
+### Changed
+- Remove `--location` flag from `mullvad status` CLI. Location and IP will now always
+  be printed (if available). `mullvad status listen` no longer prints location info.
+
+#### Android
+- Migrated to Compose Navigation
+- Allow for full rotation
+- Improve animations between screens
+
+
+## [2024.1-beta1] - 2023-12-14
 ### Added
 - Add CLI support for applying patches to the settings with `mullvad import-settings`.
+
+### Changed
+- CLI command `mullvad relay set tunnel wireguard entry-location` changed to
+  `mullvad relay set tunnel wireguard entry location`, as the `location` subcommand can now be
+  swapped for `custom-list` to select entry relays using a custom list.
 
 #### Linux
 - Rename interface name from `wg-mullvad` to `wg0-mullvad`.
 
 ### Fixed
+- Validate that hostname matches correct server type for CLI commands `mullvad relay set location`,
+  `mullvad bridge set location`, and `mullvad relay set tunnel wireguard entry location`.
+
 #### Linux
 - Prevent fragmentation when multihop is enabled by setting a default route MTU.
-
-### Changed
-#### Android
-- Migrated to Compose Navigation
-- Allow for full rotation
-- Improve animations between screens
 
 
 ## [android/2023.10-beta1] - 2023-12-11
@@ -88,9 +105,6 @@ Identical to `android/2023.8-beta2`.
 
 ### Changed
 - Update Electron from 25.2.0 to 26.3.0.
-- CLI command `mullvad relay set tunnel wireguard entry-location` changed to
-  `mullvad relay set tunnel wireguard entry location`, as the `location` subcommand can now be
-  swapped for `custom-list` to select entry relays using a custom list.
 
 #### Linux
 - Don't block forwarding of traffic when the split tunnel mark (ct mark) is set.
@@ -100,8 +114,6 @@ Identical to `android/2023.8-beta2`.
 - Remove wireguard-go (userspace WireGuard) support.
 
 ### Fixed
-- Validate that hostname matches correct server type for CLI commands `mullvad relay set location`,
-  `mullvad bridge set location`, and `mullvad relay set tunnel wireguard entry location`.
 - Show correct endpoint in CLI for custom relays.
 - Lower risk of being rate limited.
 - Fix error dialog when failing to write to console by handling the thrown error.
@@ -114,7 +126,7 @@ Identical to `android/2023.8-beta2`.
 ### Security
 #### Windows
 - Fix possible privilege escalation by setting stricter permissions on mullvad directories such as
-  the directory in ProgramData.
+  the directory in ProgramData (CVE-2023-50446).
 
 
 ## [android/2023.8-beta1] - 2023-11-20

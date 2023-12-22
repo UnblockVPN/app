@@ -58,7 +58,7 @@ class WelcomeViewModelTest {
     private val mockConnectionProxy: ConnectionProxy = mockk()
 
     // Event notifiers
-    private val eventNotifierTunnelUiState = EventNotifier<TunnelState>(TunnelState.Disconnected)
+    private val eventNotifierTunnelUiState = EventNotifier<TunnelState>(TunnelState.Disconnected())
 
     private val mockAccountRepository: AccountRepository = mockk(relaxed = true)
     private val mockDeviceRepository: DeviceRepository = mockk()
@@ -96,7 +96,8 @@ class WelcomeViewModelTest {
                 serviceConnectionManager = mockServiceConnectionManager,
                 paymentUseCase = mockPaymentUseCase,
                 outOfTimeUseCase = mockOutOfTimeUseCase,
-                pollAccountExpiry = false
+                pollAccountExpiry = false,
+                isPlayBuild = false
             )
     }
 

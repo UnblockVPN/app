@@ -25,6 +25,7 @@ struct SettingsCellFactory: CellFactoryProtocol {
         return cell
     }
 
+    // swiftlint:disable:next function_body_length
     func configureCell(_ cell: UITableViewCell, item: SettingsDataSource.Item, indexPath: IndexPath) {
         switch item {
         case .preferences:
@@ -37,7 +38,7 @@ struct SettingsCellFactory: CellFactoryProtocol {
                 comment: ""
             )
             cell.detailTitleLabel.text = nil
-            cell.accessibilityIdentifier = "PreferencesCell"
+            cell.accessibilityIdentifier = item.accessibilityIdentifier
             cell.disclosureType = .chevron
 
         case .version:
@@ -50,7 +51,7 @@ struct SettingsCellFactory: CellFactoryProtocol {
                 comment: ""
             )
             cell.detailTitleLabel.text = Bundle.main.productVersion
-            cell.accessibilityIdentifier = nil
+            cell.accessibilityIdentifier = item.accessibilityIdentifier
             cell.disclosureType = .none
 
         case .problemReport:
@@ -63,7 +64,7 @@ struct SettingsCellFactory: CellFactoryProtocol {
                 comment: ""
             )
             cell.detailTitleLabel.text = nil
-            cell.accessibilityIdentifier = nil
+            cell.accessibilityIdentifier = item.accessibilityIdentifier
             cell.disclosureType = .chevron
 
         case .faq:
@@ -76,7 +77,7 @@ struct SettingsCellFactory: CellFactoryProtocol {
                 comment: ""
             )
             cell.detailTitleLabel.text = nil
-            cell.accessibilityIdentifier = nil
+            cell.accessibilityIdentifier = item.accessibilityIdentifier
             cell.disclosureType = .externalLink
 
         case .apiAccess:
@@ -89,7 +90,7 @@ struct SettingsCellFactory: CellFactoryProtocol {
                 comment: ""
             )
             cell.detailTitleLabel.text = nil
-            cell.accessibilityIdentifier = nil
+            cell.accessibilityIdentifier = item.accessibilityIdentifier
             cell.disclosureType = .chevron
         }
     }

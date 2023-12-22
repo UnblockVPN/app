@@ -59,7 +59,8 @@ class OutOfTimeViewModelTest {
     private val mockConnectionProxy: ConnectionProxy = mockk()
 
     // Event notifiers
-    private val eventNotifierTunnelRealState = EventNotifier<TunnelState>(TunnelState.Disconnected)
+    private val eventNotifierTunnelRealState =
+        EventNotifier<TunnelState>(TunnelState.Disconnected())
 
     private val mockAccountRepository: AccountRepository = mockk(relaxed = true)
     private val mockDeviceRepository: DeviceRepository = mockk()
@@ -97,7 +98,8 @@ class OutOfTimeViewModelTest {
                 deviceRepository = mockDeviceRepository,
                 paymentUseCase = mockPaymentUseCase,
                 outOfTimeUseCase = mockOutOfTimeUseCase,
-                pollAccountExpiry = false
+                pollAccountExpiry = false,
+                isPlayBuild = false
             )
     }
 
