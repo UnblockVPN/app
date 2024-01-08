@@ -22,6 +22,13 @@ Line wrap the file at 100 chars.                                              Th
 * **Security**: in case of vulnerabilities.
 
 ## [Unreleased]
+### Added
+- Add account UUID to verbose 'mullvad account get -v' output.
+- Respect OS prefer-reduced-motion setting
+
+#### Android
+- Add support for all screen orientations.
+
 ### Fixed
 #### Linux
 - Out IP missing forever when am.i.mullvad.net returns error
@@ -29,11 +36,15 @@ Line wrap the file at 100 chars.                                              Th
 ### Changed
 - Remove `--location` flag from `mullvad status` CLI. Location and IP will now always
   be printed (if available). `mullvad status listen` no longer prints location info.
+- Custom socks5 bridges get a new CLI interface and now work without split tunneling or root.
+  In the CLI these can be found under `mullvad bridge set custom`.
 
 #### Android
-- Migrated to Compose Navigation
-- Allow for full rotation
-- Improve animations between screens
+- Migrate to Compose Navigation which also improves screen transition animations.
+
+
+## [android/2023.10] - 2023-12-14
+Identical to `android/2023.10-beta1`.
 
 
 ## [2024.1-beta1] - 2023-12-14

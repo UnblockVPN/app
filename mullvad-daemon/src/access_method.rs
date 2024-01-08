@@ -22,13 +22,13 @@ pub enum Error {
     NoSuchMethod(access_method::Id),
     /// Access method could not be rotate
     #[error(display = "Access method could not be rotated")]
-    RotationError,
+    RotationFailed,
     /// Some error occured in the daemon's state of handling
     /// [`AccessMethodSetting`]s & [`ApiConnectionMode`]s.
     #[error(display = "Error occured when handling connection settings & details")]
     ConnectionMode(#[error(source)] api::Error),
     #[error(display = "API endpoint rotation failed")]
-    RestError(#[error(source)] rest::Error),
+    Rest(#[error(source)] rest::Error),
     /// Access methods settings error
     #[error(display = "Settings error")]
     Settings(#[error(source)] settings::Error),
@@ -81,7 +81,7 @@ where
     ) -> Result<(), Error> {
         // Make sure that we are not trying to remove a built-in API access
         // method
-        let command = match self.settings.api_access_methods.find(&access_method) {
+        let command = match self.settings.api_access_methods.find_by_id(&access_method) {
             Some(api_access_method) => {
                 if api_access_method.is_builtin() {
                     Err(Error::RemoveBuiltIn)
@@ -131,7 +131,7 @@ where
     ) -> Result<AccessMethodSetting, Error> {
         self.settings
             .api_access_methods
-            .find(&access_method)
+            .find_by_id(&access_method)
             .ok_or(Error::NoSuchMethod(access_method))
             .cloned()
     }
@@ -147,21 +147,36 @@ where
         &mut self,
         access_method_update: AccessMethodSetting,
     ) -> Result<(), Error> {
-        // We have to be a bit careful. If we are about to disable the last
-        // remaining enabled access method, we would cause an inconsistent state
-        // in the daemon's settings. Therefore, we have to safeguard against
-        // this by explicitly checking for & disallow any update which would
-        // cause the last enabled access method to become disabled.
+        // If the currently active access method is updated, we need to re-set
+        // it after updating the settings.
         let current = self.get_current_access_method().await?;
         let mut command = Command::Nothing;
         let settings_update = |settings: &mut Settings| {
-            if let Some(access_method) = settings
-                .api_access_methods
-                .find_mut(&access_method_update.get_id())
+            let access_methods = &mut settings.api_access_methods;
+            if let Some(access_method) =
+                access_methods.find_by_id_mut(&access_method_update.get_id())
             {
                 *access_method = access_method_update;
                 if access_method.get_id() == current.get_id() {
                     command = Command::Set(access_method.get_id())
+                }
+                // We have to be a bit careful. If we are about to disable the last
+                // remaining enabled access method, we would cause an inconsistent state
+                // in the daemon's settings. Therefore, we have to safeguard against
+                // this by explicitly checking for any update which would cause the last
+                // enabled access method to become disabled. In that case, we should
+                // re-enable the `Direct` access method.
+                if access_methods.collect_enabled().is_empty() {
+                    if let Some(direct) = access_methods.get_direct() {
+                        direct.enabled = true;
+                    } else {
+                        // If the `Direct` access method does not exist within the
+                        // settings for some reason, the settings are in an
+                        // inconsistent state. We don't have much choice but to
+                        // reset these settings to their default value.
+                        log::warn!("The built-in access methods can not be found. This might be due to a corrupt settings file");
+                        *access_methods = access_method::Settings::default();
+                    }
                 }
             }
         };
@@ -190,7 +205,7 @@ where
             .await
             .map_err(|error| {
                 log::error!("Failed to rotate API endpoint: {}", error);
-                Error::RotationError
+                Error::RotationFailed
             })
     }
 
@@ -261,7 +276,7 @@ pub async fn test_access_method(
         .await
         .map_err(|err| {
             log::error!("Failed to rotate API endpoint: {err}");
-            Error::RestError(err)
+            Error::Rest(err)
         })?;
 
     // Set up the reset
@@ -289,7 +304,7 @@ pub async fn test_access_method(
     let result = mullvad_api::ApiProxy::new(rest_handle)
         .api_addrs_available()
         .await
-        .map_err(Error::RestError)?;
+        .map_err(Error::Rest)?;
 
     // We need to perform a rotation of API endpoint after a set action
     // Note that this will be done automatically if the API call fails,
@@ -301,7 +316,7 @@ pub async fn test_access_method(
             .await
             .map_err(|err| {
                 log::error!("Failed to rotate API endpoint: {err}");
-                Error::RestError(err)
+                Error::Rest(err)
             })?;
     }
 

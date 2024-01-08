@@ -1,6 +1,3 @@
-#![deny(rust_2018_idioms)]
-
-use chrono::{offset::Utc, DateTime};
 #[cfg(target_os = "android")]
 use futures::channel::mpsc;
 use futures::Stream;
@@ -8,11 +5,10 @@ use hyper::Method;
 #[cfg(target_os = "android")]
 use mullvad_types::account::{PlayPurchase, PlayPurchasePaymentToken};
 use mullvad_types::{
-    account::{AccountToken, VoucherSubmission},
+    account::{AccountData, AccountToken, VoucherSubmission},
     version::AppVersion,
 };
 use proxy::ApiConnectionMode;
-use std::sync::OnceLock;
 use std::{
     cell::Cell,
     collections::BTreeMap,
@@ -20,6 +16,7 @@ use std::{
     net::{IpAddr, Ipv4Addr, SocketAddr},
     ops::Deref,
     path::Path,
+    sync::OnceLock,
 };
 use talpid_types::{net::AllowedEndpoint, ErrorExt};
 
@@ -382,15 +379,10 @@ impl AccountsProxy {
         Self { handle }
     }
 
-    pub fn get_expiry(
+    pub fn get_data(
         &self,
         account: AccountToken,
-    ) -> impl Future<Output = Result<DateTime<Utc>, rest::Error>> {
-        #[derive(serde::Deserialize)]
-        struct AccountExpiryResponse {
-            expiry: DateTime<Utc>,
-        }
-
+    ) -> impl Future<Output = Result<AccountData, rest::Error>> {
         let service = self.handle.service.clone();
         let factory = self.handle.factory.clone();
         async move {
@@ -399,8 +391,7 @@ impl AccountsProxy {
                 .expected_status(&[StatusCode::OK])
                 .account(account)?;
             let response = service.request(request).await?;
-            let account: AccountExpiryResponse = response.deserialize().await?;
-            Ok(account.expiry)
+            response.deserialize().await
         }
     }
 

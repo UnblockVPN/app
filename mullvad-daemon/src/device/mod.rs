@@ -1100,11 +1100,18 @@ impl AccountManager {
         Ok(self.fetch_device_config(old_config))
     }
 
-    fn expiry_call(&self) -> Result<impl Future<Output = Result<DateTime<Utc>, Error>>, Error> {
+    fn expiry_call(
+        &self,
+    ) -> Result<impl Future<Output = Result<chrono::DateTime<Utc>, Error>>, Error> {
         let old_config = self.data.device().ok_or(Error::NoDevice)?;
         let account_token = old_config.account_token.clone();
         let account_service = self.account_service.clone();
-        Ok(async move { account_service.check_expiry_2(account_token).await })
+        Ok(async move {
+            account_service
+                .get_data_2(account_token)
+                .await
+                .map(|data| data.expiry)
+        })
     }
 
     fn needs_validation(&mut self) -> bool {
@@ -1340,8 +1347,7 @@ impl TunnelStateChangeHandler {
 
 #[cfg(test)]
 mod test {
-    use super::TunnelStateChangeHandler;
-    use super::{Error, WG_DEVICE_CHECK_THRESHOLD};
+    use super::{Error, TunnelStateChangeHandler, WG_DEVICE_CHECK_THRESHOLD};
     use mullvad_relay_selector::RelaySelector;
     use std::sync::{
         atomic::{AtomicBool, Ordering},

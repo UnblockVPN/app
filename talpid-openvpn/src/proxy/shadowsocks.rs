@@ -16,8 +16,8 @@ use shadowsocks_service::{
     },
 };
 
-use super::{Error, ProxyMonitor, ProxyMonitorCloseHandle, ProxyResourceData};
-use talpid_types::{net::openvpn::ShadowsocksProxySettings, ErrorExt};
+use super::{Error, ProxyMonitor, ProxyMonitorCloseHandle};
+use talpid_types::{net::proxy::Shadowsocks, ErrorExt};
 
 pub struct ShadowsocksProxyMonitor {
     port: u16,
@@ -27,13 +27,22 @@ pub struct ShadowsocksProxyMonitor {
 
 impl ShadowsocksProxyMonitor {
     pub async fn start(
-        settings: &ShadowsocksProxySettings,
-        _resource_data: &ProxyResourceData,
+        settings: &Shadowsocks,
+        #[cfg(target_os = "linux")] fwmark: u32,
     ) -> super::Result<Self> {
-        Self::start_inner(settings).await.map_err(Error::Io)
+        Self::start_inner(
+            settings,
+            #[cfg(target_os = "linux")]
+            fwmark,
+        )
+        .await
+        .map_err(Error::Io)
     }
 
-    async fn start_inner(settings: &ShadowsocksProxySettings) -> io::Result<Self> {
+    async fn start_inner(
+        settings: &Shadowsocks,
+        #[cfg(target_os = "linux")] fwmark: u32,
+    ) -> io::Result<Self> {
         let mut config = Config::new(ConfigType::Local);
 
         config.fast_open = true;
@@ -50,7 +59,7 @@ impl ShadowsocksProxyMonitor {
             .push(LocalInstanceConfig::with_local_config(local));
 
         let server = ServerConfig::new(
-            settings.peer,
+            settings.endpoint,
             settings.password.clone(),
             settings.cipher.parse().map_err(|_| {
                 io::Error::new(
@@ -66,7 +75,7 @@ impl ShadowsocksProxyMonitor {
 
         #[cfg(target_os = "linux")]
         {
-            config.outbound_fwmark = settings.fwmark;
+            config.outbound_fwmark = Some(fwmark);
         }
 
         let srv = local::Server::new(config).await?;
@@ -93,7 +102,7 @@ impl ShadowsocksProxyMonitor {
 
     fn get_listener_addr(srv: &local::Server) -> io::Result<SocketAddr> {
         let no_addr_err = || io::Error::new(io::ErrorKind::Other, "Missing listener address");
-        let socks_server = srv.socks_servers().get(0).ok_or_else(no_addr_err)?;
+        let socks_server = srv.socks_servers().first().ok_or_else(no_addr_err)?;
         socks_server
             .tcp_server()
             .ok_or_else(no_addr_err)?

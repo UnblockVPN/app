@@ -16,7 +16,7 @@ use mullvad_api::{
     ApiEndpointUpdateCallback,
 };
 use mullvad_relay_selector::RelaySelector;
-use mullvad_types::access_method::{self, AccessMethod, AccessMethodSetting, BuiltInAccessMethod};
+use mullvad_types::access_method::{AccessMethod, AccessMethodSetting, BuiltInAccessMethod};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex, Weak},
@@ -24,7 +24,7 @@ use std::{
 #[cfg(target_os = "android")]
 use talpid_core::mpsc::Sender;
 use talpid_core::tunnel_state_machine::TunnelCommand;
-use talpid_types::net::{openvpn::ProxySettings, AllowedEndpoint, Endpoint};
+use talpid_types::net::{AllowedEndpoint, Endpoint};
 
 pub enum Message {
     Get(ResponseTx<AccessMethodSetting>),
@@ -43,6 +43,31 @@ pub enum Error {
     OneshotSendFailed,
     #[error(display = "AccessModeSelector is not responding.")]
     NotRunning(#[error(source)] oneshot::Canceled),
+}
+
+impl std::fmt::Display for Message {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Message::Get(_) => f.write_str("Get"),
+            Message::Set(..) => f.write_str("Set"),
+            Message::Next(_) => f.write_str("Next"),
+            Message::Update(..) => f.write_str("Update"),
+        }
+    }
+}
+
+impl Error {
+    /// Check if this error implies that the currenly running
+    /// [`AccessModeSelector`] can not continue to operate properly.
+    ///
+    /// To recover from this kind of error, the daemon will probably have to
+    /// intervene.
+    fn is_critical_error(&self) -> bool {
+        matches!(
+            self,
+            Error::SendFailed(..) | Error::OneshotSendFailed | Error::NotRunning(..)
+        )
+    }
 }
 
 type ResponseTx<T> = oneshot::Sender<Result<T>>;
@@ -66,7 +91,7 @@ impl AccessModeSelectorHandle {
 
     pub async fn get_access_method(&self) -> Result<AccessMethodSetting> {
         self.send_command(Message::Get).await.map_err(|err| {
-            log::error!("Failed to get current access method!");
+            log::debug!("Failed to get current access method!");
             err
         })
     }
@@ -75,7 +100,7 @@ impl AccessModeSelectorHandle {
         self.send_command(|tx| Message::Set(tx, value))
             .await
             .map_err(|err| {
-                log::error!("Failed to set new access method!");
+                log::debug!("Failed to set new access method!");
                 err
             })
     }
@@ -84,14 +109,14 @@ impl AccessModeSelectorHandle {
         self.send_command(|tx| Message::Update(tx, values))
             .await
             .map_err(|err| {
-                log::error!("Failed to update new access methods!");
+                log::debug!("Failed to switch to a new set of access methods");
                 err
             })
     }
 
     pub async fn next(&self) -> Result<ApiConnectionMode> {
         self.send_command(Message::Next).await.map_err(|err| {
-            log::error!("Failed to update new access methods!");
+            log::debug!("Failed while getting the next access method");
             err
         })
     }
@@ -163,6 +188,7 @@ impl AccessModeSelector {
 
     async fn into_future(mut self) {
         while let Some(cmd) = self.cmd_rx.next().await {
+            log::trace!("Processing {cmd} command");
             let execution = match cmd {
                 Message::Get(tx) => self.on_get_access_method(tx),
                 Message::Set(tx, value) => self.on_set_access_method(tx, value),
@@ -171,12 +197,12 @@ impl AccessModeSelector {
             };
             match execution {
                 Ok(_) => (),
-                Err(err) => {
-                    log::trace!(
-                        "AccessModeSelector is going down due to {error}",
-                        error = err
-                    );
+                Err(error) if error.is_critical_error() => {
+                    log::error!("AccessModeSelector failed due to an internal error and won't be able to recover without a restart. {error}");
                     break;
+                }
+                Err(error) => {
+                    log::debug!("AccessModeSelector failed processing command due to {error}");
                 }
             }
         }
@@ -257,6 +283,7 @@ impl AccessModeSelector {
     /// [`ApiConnectionModeProvider`] the standard [`std::convert::From`] trait
     /// can not be implemented.
     fn from(&mut self, access_method: AccessMethod) -> ApiConnectionMode {
+        use talpid_types::net::proxy;
         match access_method {
             AccessMethod::BuiltIn(access_method) => match access_method {
                 BuiltInAccessMethod::Direct => ApiConnectionMode::Direct,
@@ -264,13 +291,12 @@ impl AccessModeSelector {
                     .relay_selector
                     .get_bridge_forced()
                     .and_then(|settings| match settings {
-                        ProxySettings::Shadowsocks(ss_settings) => {
-                            let ss_settings: access_method::Shadowsocks =
-                                access_method::Shadowsocks::new(
-                                    ss_settings.peer,
-                                    ss_settings.cipher,
-                                    ss_settings.password,
-                                );
+                        proxy::CustomProxy::Shadowsocks(ss_settings) => {
+                            let ss_settings: proxy::Shadowsocks = proxy::Shadowsocks::new(
+                                ss_settings.endpoint,
+                                ss_settings.cipher,
+                                ss_settings.password,
+                            );
                             Some(ApiConnectionMode::Proxied(ProxyConfig::Shadowsocks(
                                 ss_settings,
                             )))
@@ -283,11 +309,14 @@ impl AccessModeSelector {
                     .unwrap_or(ApiConnectionMode::Direct),
             },
             AccessMethod::Custom(access_method) => match access_method {
-                access_method::CustomAccessMethod::Shadowsocks(shadowsocks_config) => {
+                proxy::CustomProxy::Shadowsocks(shadowsocks_config) => {
                     ApiConnectionMode::Proxied(ProxyConfig::Shadowsocks(shadowsocks_config))
                 }
-                access_method::CustomAccessMethod::Socks5(socks_config) => {
-                    ApiConnectionMode::Proxied(ProxyConfig::Socks(socks_config))
+                proxy::CustomProxy::Socks5Local(socks_config) => {
+                    ApiConnectionMode::Proxied(ProxyConfig::Socks5Local(socks_config))
+                }
+                proxy::CustomProxy::Socks5Remote(socks_config) => {
+                    ApiConnectionMode::Proxied(ProxyConfig::Socks5Remote(socks_config))
                 }
             },
         }

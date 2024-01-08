@@ -3,11 +3,14 @@ use chrono::{offset::Utc, DateTime};
 use jnix::{FromJava, IntoJava};
 use serde::{Deserialize, Serialize};
 
-/// Identifier used to identify a Mullvad account.
+/// Account identifier used for authentication.
 pub type AccountToken = String;
 
-/// Identifier used to authenticate a Mullvad account.
+/// Temporary authorization token derived from a Mullvad account.
 pub type AccessToken = String;
+
+/// Account identifier (not used for authentication).
+pub type AccountId = String;
 
 /// The payment token returned by initiating a google play purchase.
 /// In the API this is called the `obfuscated_id`.
@@ -19,6 +22,8 @@ pub type PlayPurchasePaymentToken = String;
 #[cfg_attr(target_os = "android", derive(IntoJava))]
 #[cfg_attr(target_os = "android", jnix(package = "net.mullvad.mullvadvpn.model"))]
 pub struct AccountData {
+    #[cfg_attr(target_os = "android", jnix(skip))]
+    pub id: AccountId,
     #[cfg_attr(target_os = "android", jnix(map = "|expiry| expiry.to_string()"))]
     pub expiry: DateTime<Utc>,
 }
@@ -44,7 +49,8 @@ pub struct VoucherSubmission {
     pub new_expiry: DateTime<Utc>,
 }
 
-/// `PlayPurchase` is provided to google in order to verify that a google play purchase was acknowledged.
+/// `PlayPurchase` is provided to google in order to verify that a google play purchase was
+/// acknowledged.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[cfg_attr(target_os = "android", derive(FromJava))]
 #[cfg_attr(target_os = "android", jnix(package = "net.mullvad.mullvadvpn.model"))]

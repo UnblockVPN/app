@@ -462,8 +462,18 @@ mod test {
                 }
               },
               "bridge_settings": {
+                "bridge_type": "normal",
                 "normal": {
                   "location": "any"
+                },
+                "custom": {
+                  "socks5_local": {
+                    "local_port": 1080,
+                    "remote_endpoint": {
+                      "address": "1.3.3.7:22",
+                      "protocol": "tcp"
+                    }
+                  }
                 }
               },
               "bridge_state": "auto",
@@ -482,7 +492,7 @@ mod test {
                   "enable_ipv6": true
                 }
               },
-              "settings_version": 5,
+              "settings_version": 8,
               "show_beta_releases": false,
               "custom_lists": {
                 "custom_lists": []
@@ -518,7 +528,7 @@ mod test {
         );
 
         assert!(
-            settings.block_when_disconnected == false,
+            !settings.block_when_disconnected,
             "The daemon should not block the internet if settings are missing"
         );
     }

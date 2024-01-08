@@ -14,12 +14,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyle
 import net.mullvad.mullvadvpn.R
+import net.mullvad.mullvadvpn.compose.button.NegativeButton
 import net.mullvad.mullvadvpn.compose.button.PrimaryButton
 import net.mullvad.mullvadvpn.compose.textfield.DnsTextField
 import net.mullvad.mullvadvpn.lib.theme.AppTheme
@@ -137,7 +137,6 @@ fun DnsDialog(
                         stringResource(R.string.update_dns_server_dialog_title)
                     },
                 color = Color.White,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Normal)
             )
         },
         text = {
@@ -186,7 +185,7 @@ fun DnsDialog(
                 )
 
                 if (!state.isNewEntry) {
-                    PrimaryButton(
+                    NegativeButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = onRemoveDnsClick,
                         text = stringResource(id = R.string.remove_button)

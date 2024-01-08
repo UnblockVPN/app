@@ -25,8 +25,8 @@
 //! # Creating a migration
 //!
 //! 1. Copy `vX.rs.template` to `vX.rs` where `X` is the latest settings version right now.
-//! 1. Add the new version (`Y = X+1`) to `SettingsVersion` and bump `CURRENT_SETTINGS_VERSION`
-//!    to `Y`.
+//! 1. Add the new version (`Y = X+1`) to `SettingsVersion` and bump `CURRENT_SETTINGS_VERSION` to
+//!    `Y`.
 //! 1. Write a comment in the new module about how the format changed, what it needs to migrate.
 //! 1. Implement the migration and add adequate tests.
 //! 1. Add to the changelog: "Settings format updated to `vY`"
@@ -51,6 +51,7 @@ mod v3;
 mod v4;
 mod v5;
 mod v6;
+mod v7;
 
 const SETTINGS_FILE: &str = "settings.json";
 
@@ -85,11 +86,11 @@ pub enum Error {
     WriteHistory(#[error(source)] io::Error),
 
     #[error(display = "Failed to parse account history")]
-    ParseHistoryError,
+    ParseHistory,
 
     #[cfg(windows)]
     #[error(display = "Failed to restore Windows update backup")]
-    WinMigrationError(#[error(source)] windows::Error),
+    WinMigration(#[error(source)] windows::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -119,7 +120,7 @@ pub async fn migrate_all(cache_dir: &Path, settings_dir: &Path) -> Result<Option
     #[cfg(windows)]
     windows::migrate_after_windows_update(settings_dir)
         .await
-        .map_err(Error::WinMigrationError)?;
+        .map_err(Error::WinMigration)?;
 
     let path = settings_dir.join(SETTINGS_FILE);
 
@@ -148,6 +149,7 @@ pub async fn migrate_all(cache_dir: &Path, settings_dir: &Path) -> Result<Option
 
     let migration_data = v5::migrate(&mut settings)?;
     v6::migrate(&mut settings)?;
+    v7::migrate(&mut settings)?;
 
     if settings == old_settings {
         // Nothing changed
